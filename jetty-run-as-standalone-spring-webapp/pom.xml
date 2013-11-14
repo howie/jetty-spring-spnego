@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>tw.howie.sample.jetty</groupId>
+		<artifactId>jetty-spring-spnego</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>jetty-run-as-standalone-spring-webapp</artifactId>
+	<packaging>jar</packaging>
+
+	<name>jetty-run-as-standalone-spring-webapp</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+	</dependencies>
+
+	<build>
+
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
+		<outputDirectory>${basedir}/target/classes</outputDirectory>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>${basedir}/src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+
+		<plugins>
+			<!-- http://mojo.codehaus.org/exec-maven-plugin/usage.html -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>maven</executable>
+					<!-- optional -->
+					<workingDirectory>/tmp</workingDirectory>
+					<!-- <arguments> -->
+					<!-- <argument>-X</argument> -->
+					<!-- <argument>myproject:dist</argument> -->
+					<!-- </arguments> -->
+				</configuration>
+			</plugin>
+
+			<!-- This plugin will setup the resulting jar for direct execution. If using a shaded jar, this is not needed. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib</classpathPrefix>
+							<!-- <mainClass>ca.unx.template.Main</mainClass> -->
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${maven-dependency-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- <plugin> -->
+			<!-- <groupId>org.codehaus.mojo</groupId> -->
+			<!-- <artifactId>appassembler-maven-plugin</artifactId> -->
+			<!-- <version>${maven-appassembler-maven-plugin}</version> -->
+			<!-- <configuration> -->
+			<!-- <assembleDirectory>target</assembleDirectory> -->
+			<!-- <generateRepository>false</generateRepository> -->
+			<!-- <programs> -->
+			<!-- <program> -->
+			<!-- <mainClass>org.eclipse.jetty.server.Server</mainClass> -->
+			<!-- <name>Main</name> -->
+			<!-- </program> -->
+			<!-- </programs> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>assemble</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
+
+		</plugins>
+	</build>
+
+	<profiles>
+
+		<profile>
+
+			<id>fatjar</id>
+
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<build>
+				<plugins>
+
+					<!-- Force recreation of the jar so the shade plugin doesn't try to shade an already shaded jar. -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>2.4</version>
+						<configuration>
+							<forceCreation>true</forceCreation>
+							<archive>
+								<manifest>
+									<addClasspath>false</addClasspath>
+								</manifest>
+							</archive>
+						</configuration>
+					</plugin>
+
+					<!-- Use the shade plugin to build a fat jar. -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-shade-plugin</artifactId>
+						<version>${maven-shade-plugin.version}</version>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<transformers>
+										<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+										<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+											<!-- <mainClass>ca.unx.template.Main</mainClass> -->
+										</transformer>
+
+										<!-- Files that need to be merged. -->
+										<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+											<resource>META-INF/spring.handlers</resource>
+										</transformer>
+										<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+											<resource>META-INF/spring.schemas</resource>
+										</transformer>
+									</transformers>
+
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+
+		</profile>
+
+	</profiles>
+</project>

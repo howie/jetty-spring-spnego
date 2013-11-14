@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>tw.howie.sample</groupId>
+	<groupId>tw.howie.sample.jetty</groupId>
 	<artifactId>jetty-spring-spnego</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -11,10 +12,37 @@
 	<description>Spring security with Spnego integration with Jetty</description>
 
 
+	<modules>
+		<module>jetty-run-by-maven-plugin-webapp</module>
+		<module>jetty-run-as-standalone-spring-webapp</module>
+		<module>jetty-run-as-standalone-hardcode-webapp</module>
+	</modules>
+
+
 	<properties>
 		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<report.encoding>UTF-8</report.encoding>
+
+		<!-- Spring Framework -->
+		<springframework.version>3.2.4.RELEASE</springframework.version>
+		<springframework.security.version>3.2.0.RC2</springframework.security.version>
+		<springframework.security.extensions.kerberos>1.0.0.M2</springframework.security.extensions.kerberos>
+
+		<!-- XML / XHTML / HTML5 template engine -->
+		<thymeleaf.version>2.1.0.RELEASE</thymeleaf.version>
+		<jetty.version>9.0.6.v20130930</jetty.version>
+		<guava.version>14.0.1</guava.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<logback.version>1.0.13</logback.version>
+
+		<!-- Performance Monitor -->
+		<yammer.metrics.version>3.0.1</yammer.metrics.version>
+
+		<!-- Testing -->
+		<junit.version>4.11</junit.version>
+		<mockito.version>1.9.5</mockito.version>
+		<powermock.version>1.5</powermock.version>
 
 		<!-- Plugin version -->
 		<surefire.skipTest>false</surefire.skipTest>
@@ -26,7 +54,7 @@
 		<maven-clean-plugin.version>2.5</maven-clean-plugin.version>
 		<maven-war-plugin.version>2.4</maven-war-plugin.version>
 		<maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
-
+		<maven-shade-plugin.version>2.1</maven-shade-plugin.version>
 		<maven-release-plugin.version>2.4.1</maven-release-plugin.version>
 		<maven-surefire-plugin.version>2.13</maven-surefire-plugin.version>
 		<maven-surefire-report-plugin.version>2.15</maven-surefire-report-plugin.version>
@@ -39,7 +67,276 @@
 		<exec-maven-plugin>1.2.1</exec-maven-plugin>
 	</properties>
 
+	<dependencies>
+		<!-- Spring -->
+
+		<!-- Core utilities used by other modules. Define this if you use Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${springframework.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
+
+		<!-- Bean Factory and JavaBeans utilities (depends on spring-core) Define this if you use Spring Bean APIs (org.springframework.beans.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+
+		<!-- Various Application Context utilities, including EhCache, JavaMail, Quartz, and Freemarker integration Define this 
+			if you need any of these integrations -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+
+
+		<!-- Application Context (depends on spring-core, spring-expression, spring-aop, spring-beans) This is the central artifact 
+			for Spring's Dependency Injection Container and is generally always defined -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${springframework.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${springframework.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${springframework.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${springframework.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security.extensions</groupId>
+			<artifactId>spring-security-kerberos-core</artifactId>
+			<!-- <version>1.0.0.M2</version> -->
+			<version>${springframework.security.extensions.kerberos}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+
+		<!--Thymeleaf -->
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring3</artifactId>
+			<version>${thymeleaf.version}</version>
+		</dependency>
+
+		<!-- http://www.eclipse.org/jetty/documentation/current/example-logging-logback-centralized.html -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp-logging</artifactId>
+			<version>9.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-spring</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-deploy</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+
+		<!-- util -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.3</version>
+		</dependency>
+
+		<!-- log -->
+
+		<!-- In order to handle exist commons-logging or log4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+
+
+		<!-- Yammer (Coda Hale) Metrics -->
+		<dependency>
+			<groupId>com.codahale.metrics</groupId>
+			<artifactId>metrics-core</artifactId>
+			<version>${yammer.metrics.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.codahale.metrics</groupId>
+			<artifactId>metrics-servlets</artifactId>
+			<version>${yammer.metrics.version}</version>
+		</dependency>
+
+		<!-- test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>junit</artifactId>
+					<groupId>junit</groupId>
+				</exclusion>
+			</exclusions>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- System -->
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>tools</artifactId>
+			<version>${java.version}</version>
+			<scope>system</scope>
+			<systemPath>${toolsjar}</systemPath>
+		</dependency>
+
+	</dependencies>
+
 	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.vserion}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerArgument>-Xlint:all</compilerArgument>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${maven-dependency-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${endorsed.dir}</outputDirectory>
+							<silent>true</silent>
+							<artifactItems>
+								<artifactItem>
+									<groupId>javax</groupId>
+									<artifactId>javaee-endorsed-api</artifactId>
+									<version>7.0</version>
+									<type>jar</type>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>${maven-eclipse-plugin.version}</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+				</configuration>
+			</plugin>
+
+
+		</plugins>
+
 
 		<!-- http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
 		<pluginManagement>
@@ -112,6 +409,5 @@
 	</profiles>
 
 
+
 </project>
-
-

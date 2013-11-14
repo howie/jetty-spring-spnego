@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>tw.howie.sample.jetty</groupId>
+		<artifactId>jetty-spring-spnego</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>jetty-run-by-maven-plugin-webapp</artifactId>
+	<packaging>jar</packaging>
+
+	<name>jetty-run-by-maven-plugin-webapp</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+	</dependencies>
+
+	<build>
+
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
+		<outputDirectory>${basedir}/target/classes</outputDirectory>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>${basedir}/src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+
+		<plugins>
+			<!-- mvn jetty:run -->
+			<!-- http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html -->
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<systemProperties>
+						<systemProperty>
+							<name>logback.configurationFile</name>
+							<value>${basedir}/src/main/resource/logback.xml</value>
+						</systemProperty>
+					</systemProperties>
+					<!-- <requestLog>true</requestLog> -->
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<!-- <jettyXml>${basedir}/src/main/webapp/WEB-INF/jetty.xml</jettyXml> -->
+					<!-- ,jetty-http.xml,jetty-ssl.xml,jetty-https.xml</jettyXml> -->
+					<webAppSourceDirectory>${basedir}/src/main/webapp/</webAppSourceDirectory>
+					<webApp>
+						<contextPath>/test</contextPath>
+						<descriptor>${basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
+					</webApp>
+					<!-- <classesDirectory>${basedir}/somewhere/else</classesDirectory> -->
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+						<version>${logback.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
