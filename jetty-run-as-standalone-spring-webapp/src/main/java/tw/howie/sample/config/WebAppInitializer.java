@@ -1,8 +1,12 @@
 /**
  * 
  */
-package tw.howie.sample.jetty;
+package tw.howie.sample.config;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -10,10 +14,13 @@ import javax.servlet.ServletException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**
+ * 同等於web.xml 的存在
+ * 
  * @author howie_yu
  * 
  */
@@ -50,23 +57,6 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 	}
 
 	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-
-		/* Let super do its thing... */
-		super.onStartup(servletContext);
-
-		/* Add the Spring Security filter. */
-		servletContext.addFilter("springSecurityFilterChain", new DelegatingFilterProxy()).addMappingForUrlPatterns(null,
-																													false,
-																													"/*");
-
-		/*
-		 * We could add more servlets here such as the metrics servlet which is
-		 * added in @{link ca.unx.template.config.JettyConfiguration}.
-		 */
-	}
-
-	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		try {
 			onStartup(servletContextEvent.getServletContext());
@@ -87,4 +77,44 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 	@Override
 	protected void registerContextLoaderListener(ServletContext servletContext) {
 	}
+
+	private void configureEncodingFilter(ServletContext servletContext) {
+
+		CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
+		encodingFilter.setEncoding("UTF-8");
+		encodingFilter.setForceEncoding(false);
+		FilterRegistration.Dynamic encodingFilterDinamic = servletContext.addFilter("charEncodingFilter",
+																					encodingFilter);
+		encodingFilterDinamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+	}
+
+	private void configureSpringSecurityFilter(ServletContext servletContext) {
+
+		DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy("springSecurityFilterChain");
+
+		FilterRegistration.Dynamic securityFilterDynamic = servletContext.addFilter("securityFilter",
+																					delegatingFilterProxy);
+		securityFilterDynamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+	}
+
+	@Override
+	public void onStartup(ServletContext servletContext) throws ServletException {
+
+		logger.info("On Startup WebAppInitializer.....");
+		
+		/* Let super do its thing... , include add RootConfig and ServletConfig */
+		super.onStartup(servletContext);
+
+		configureEncodingFilter(servletContext);
+
+		/* Add the Spring Security filter. */
+		configureSpringSecurityFilter(servletContext);
+
+		/*
+		 * We could add more servlets here such as the metrics servlet which is
+		 * added in @{link ca.unx.template.config.JettyConfiguration}.
+		 */
+	}
+
 }

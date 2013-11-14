@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tw.howie.sample.jetty;
+package tw.howie.sample.config;
 
 import java.io.IOException;
 
@@ -12,9 +12,12 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
@@ -32,6 +35,7 @@ import com.codahale.metrics.servlets.MetricsServlet;
  * 
  */
 @Configuration
+@PropertySource("classpath:jetty.properties")
 public class JettyConfiguration {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -44,6 +48,17 @@ public class JettyConfiguration {
 
 	@Autowired
 	private HealthCheckRegistry metricsHealthCheckRegistry;
+
+	@Value("${jetty.port:8080}")
+	private int jettyPort;
+
+	@Value("${jetty.contextPath:/}")
+	private String contextPath;
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
 
 	/**
 	 * Performance Monitor
@@ -64,14 +79,22 @@ public class JettyConfiguration {
 	public WebAppContext webAppContext() throws IOException {
 
 		WebAppContext ctx = new WebAppContext();
-		ctx.setContextPath("/");
-		ctx.setWar(new ClassPathResource("webapp").getURI().toString());
+		ctx.setContextPath(contextPath);
+		String warPath = new ClassPathResource("webapp").getURI().toString();
+		logger.info("warPath:{}", warPath);
+		ctx.setWar(warPath);
 
 		/* Disable directory listings if no index.html is found. */
 		ctx.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+		ctx.setInitParameter("development", "true");
+		ctx.setInitParameter("checkInterval", "10");
+		ctx.setInitParameter("compilerTargetVM", "1.7");
+		ctx.setInitParameter("compilerSourceVM", "1.7");
+		// ctx.setInitParameter("compiler", "1.7");
 
 		/*
-		 * Create the root web application context and set it as a servlet
+		 * Create the root web application context and set
+		 * it as a servlet
 		 * attribute so the dispatcher servlet can find it.
 		 */
 		GenericWebApplicationContext webApplicationContext = new GenericWebApplicationContext();
@@ -97,7 +120,7 @@ public class JettyConfiguration {
 
 		/* Create a basic connector. */
 		ServerConnector httpConnector = new ServerConnector(server);
-		httpConnector.setPort(8080);
+		httpConnector.setPort(jettyPort);
 		server.addConnector(httpConnector);
 
 		server.setHandler(webAppContext());
@@ -109,5 +132,21 @@ public class JettyConfiguration {
 		addMetricsServlet(webAppContext());
 
 		return server;
+	}
+
+	/**
+	 * The metrics registry.
+	 */
+	@Bean
+	public MetricRegistry metricsRegistry() {
+		return new MetricRegistry();
+	}
+
+	/**
+	 * The metrics health check registry.
+	 */
+	@Bean
+	public HealthCheckRegistry metricsHealthCheckRegistry() {
+		return new HealthCheckRegistry();
 	}
 }

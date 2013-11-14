@@ -1,15 +1,14 @@
 /**
  * 
  */
-package tw.howie.sample.jetty;
+package tw.howie.sample.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.stereotype.Controller;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -33,7 +32,10 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
  */
 @EnableWebMvc
 @Configuration
-@ComponentScan(useDefaultFilters = false, basePackages = {"tw.howie.sample"}, includeFilters = {@ComponentScan.Filter(Controller.class)})
+@EnableAsync
+// @EnableScheduling
+// @ComponentScan(useDefaultFilters = false, basePackages = {"tw.howie.sample"}, includeFilters =
+// {@ComponentScan.Filter(Controller.class)})
 @ImportResource("classpath:META-INF/spring/servlet-context.xml")
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
@@ -48,6 +50,14 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
 	}
+
+	// @Bean
+	// public InternalResourceViewResolver jspViewResolver() {
+	// InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+	// resolver.setPrefix("/WEB-INF/jsp");
+	// resolver.setSuffix(".jsp");
+	// return resolver;
+	// }
 
 	@Bean
 	public ServletContextTemplateResolver thymeleafTemplateResolver() {

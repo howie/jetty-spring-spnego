@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tw.howie.sample.jetty.auth;
+package tw.howie.sample.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * @author howie_yu
  * 
  */
-public class DummyUserDetailsService implements UserDetailsService {
-	private final Logger logger = LoggerFactory.getLogger(DummyUserDetailsService.class);
+public class DummyUserDetailsServiceImpl implements UserDetailsService {
+	private final Logger logger = LoggerFactory.getLogger(DummyUserDetailsServiceImpl.class);
 
 	/*
 	 * (non-Javadoc)

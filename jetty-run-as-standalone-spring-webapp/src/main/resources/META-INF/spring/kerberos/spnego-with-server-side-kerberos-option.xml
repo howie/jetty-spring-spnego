@@ -8,7 +8,6 @@
                 		http://www.springframework.org/schema/context 
                 		http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<sec:global-method-security pre-post-annotations="enabled" />
 	<bean id="loggerListener" class="org.springframework.security.authentication.event.LoggerListener" />
 
 
@@ -18,8 +17,9 @@
 		<sec:intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:intercept-url pattern="/images/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:intercept-url pattern="/secure/**" access="IS_AUTHENTICATED_FULLY" />
+		<sec:intercept-url pattern="metrics" access="IS_AUTHENTICATED_FULLY" />
 		<sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER" />
-		<sec:form-login authentication-failure-url="/login.html" login-page="/login.html" default-target-url="/secure/index.jsp" />
+		<sec:form-login login-page="/login.html" default-target-url="/secure/index.jsp" />
 	</sec:http>
 
 	<bean id="spnegoEntryPoint" class="org.springframework.security.extensions.kerberos.web.SpnegoEntryPoint" />
@@ -61,9 +61,8 @@
 	</bean>
 
 	<!-- Just returns the User authenticated by Kerberos and gives him the ROLE_USER -->
-	<bean id="dummyUserDetailsService" class="tw.howie.sample.jetty.auth.DummyUserDetailsService" />
+	<bean id="dummyUserDetailsService" class="tw.howie.sample.service.impl.DummyUserDetailsServiceImpl" />
 
-	<context:property-placeholder location="classpath:kerberos.properties" />
 
 </beans>
 

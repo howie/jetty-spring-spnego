@@ -11,6 +11,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import tw.howie.sample.config.RootConfiguration;
+
 /**
  * Application entry point.
  * 
@@ -36,8 +38,12 @@ public class SpringJettyServer {
 	 */
 	public static void main(String[] args) {
 
-		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
+		logger.info("Start Spring Jetty Server.....");
 
+		try {
+
+			@SuppressWarnings("resource")
+			AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 			/*
 			 * One problem with SpringMVC is it creates its own application
 			 * context, and so it can end up failing but our application will
@@ -57,6 +63,7 @@ public class SpringJettyServer {
 				}
 			});
 
+			logger.info("Start register JettyConfiguration.....");
 			applicationContext.registerShutdownHook();
 			applicationContext.register(RootConfiguration.class);
 			applicationContext.refresh();
