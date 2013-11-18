@@ -15,7 +15,6 @@
 	<modules>
 		<module>jetty-run-by-maven-plugin-webapp</module>
 		<module>jetty-run-as-standalone-spring-webapp</module>
-		<module>jetty-run-as-standalone-hardcode-webapp</module>
 	</modules>
 
 
@@ -27,7 +26,7 @@
 		<!-- Spring Framework -->
 		<springframework.version>3.2.4.RELEASE</springframework.version>
 		<springframework.security.version>3.2.0.RC2</springframework.security.version>
-		<springframework.security.extensions.kerberos>1.0.0.M2</springframework.security.extensions.kerberos>
+		<springframework.security.extensions.kerberos>1.0.0.CI-SNAPSHOT</springframework.security.extensions.kerberos>
 
 		<!-- XML / XHTML / HTML5 template engine -->
 		<thymeleaf.version>2.1.0.RELEASE</thymeleaf.version>
@@ -143,12 +142,11 @@
 			<version>${springframework.security.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.security.extensions</groupId>
-			<artifactId>spring-security-kerberos-core</artifactId>
-			<!-- <version>1.0.0.M2</version> -->
-			<version>${springframework.security.extensions.kerberos}</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.security.extensions</groupId> -->
+		<!-- <artifactId>spring-security-kerberos-core</artifactId> -->
+		<!-- <version>${springframework.security.extensions.kerberos}</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -409,6 +407,15 @@
 		</profile>
 	</profiles>
 
-
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>http://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 </project>

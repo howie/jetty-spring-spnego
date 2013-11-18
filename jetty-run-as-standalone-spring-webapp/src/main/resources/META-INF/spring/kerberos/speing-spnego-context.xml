@@ -8,8 +8,9 @@
                 		http://www.springframework.org/schema/beans 
                 		http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<sec:http entry-point-ref="spnegoEntryPoint">
+	<sec:http entry-point-ref="spnegoEntryPoint" auto-config="false">
 		<sec:intercept-url pattern="/secure/**" access="IS_AUTHENTICATED_FULLY" />
+		<sec:intercept-url pattern="/monitor/**" access="IS_AUTHENTICATED_FULLY" />
 		<sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER" />
 	</sec:http>
 
@@ -45,8 +46,7 @@
 	</bean>
 
 	<!-- Just returns the User authenticated by Kerberos and gives him the ROLE_USER -->
-	<bean id="dummyUserDetailsService" class="org.springframework.security.extensions.kerberos.sample.DummyUserDetailsService" />
+	<bean id="dummyUserDetailsService" class="tw.howie.sample.service.impl.DummyUserDetailsServiceImpl" />
 
-	<context:property-placeholder location="/WEB-INF/kerberos.properties" />
 
 </beans>

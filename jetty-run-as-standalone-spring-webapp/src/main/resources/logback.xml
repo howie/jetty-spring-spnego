@@ -14,9 +14,9 @@
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>INFO</level>
 		</filter>
-		<file>/tmp/log/bee/server.log</file>
+		<file>/tmp/logs/key_server/server.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>/tmp/log/bee/server.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>/tmp/logs/key_server/server.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
 
@@ -29,7 +29,13 @@
 
 	<!-- 3rd party -->
 	<logger name="org.springframework" additivity="false">
-		<level value="WARN" />
+		<level value="INFO" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+
+	<logger name="org.springframework.security.extensions" additivity="false">
+		<level value="INFO" />
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</logger>
@@ -41,7 +47,7 @@
 	</logger>
 
 	<logger name="org.apache.http" additivity="false">
-		<level value="ERROR" />
+		<level value="INFO" />
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</logger>

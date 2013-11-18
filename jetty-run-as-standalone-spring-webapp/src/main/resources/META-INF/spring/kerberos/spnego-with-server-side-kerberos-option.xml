@@ -17,7 +17,8 @@
 		<sec:intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:intercept-url pattern="/images/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:intercept-url pattern="/secure/**" access="IS_AUTHENTICATED_FULLY" />
-		<sec:intercept-url pattern="metrics" access="IS_AUTHENTICATED_FULLY" />
+		<sec:intercept-url pattern="/monitor/**" access="IS_AUTHENTICATED_FULLY" />
+		<sec:intercept-url pattern="/j_spring_security_check*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER" />
 		<sec:form-login login-page="/login.html" default-target-url="/secure/index.jsp" />
 	</sec:http>

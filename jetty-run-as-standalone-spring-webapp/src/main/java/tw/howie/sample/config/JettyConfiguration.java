@@ -41,9 +41,7 @@ import com.codahale.metrics.servlets.MetricsServlet;
 /**
  * Configure the embedded Jetty server and the SpringMVC dispatcher servlet.
  * 
- * @see <a
- *      href="http://download.eclipse.org/jetty/stable-9/xref/org/eclipse/jetty/embedded/LikeJettyXml.html">JettyXML</a>
- * 
+ * @see <a herf="http://www.eclipse.org/jetty/documentation/current/embedding-jetty.html">Embedded-jetty</a>
  * 
  * @author howie_yu
  * 
@@ -83,14 +81,13 @@ public class JettyConfiguration {
 
 	@Value("${jetty.log.path:/tmp/logs/yyyy_mm_dd.request.log}")
 	private String logPath;
-	
+
 	@Value("${metrics.servlet.path:/metrics/*}")
 	private String metricsServletPath;
 
 	@Value("${ssl.keyStorePath:/etc/keystore}")
 	private String keyStorePath;
 
-	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
