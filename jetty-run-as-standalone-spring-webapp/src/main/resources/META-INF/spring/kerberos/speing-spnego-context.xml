@@ -10,6 +10,7 @@
 
 	<sec:http entry-point-ref="spnegoEntryPoint" auto-config="false">
 		<sec:intercept-url pattern="/secure/**" access="IS_AUTHENTICATED_FULLY" />
+		<sec:intercept-url pattern="/api/**" access="IS_AUTHENTICATED_FULLY" />
 		<sec:intercept-url pattern="/monitor/**" access="IS_AUTHENTICATED_FULLY" />
 		<sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER" />
 	</sec:http>

@@ -34,6 +34,12 @@
 		<appender-ref ref="FILE" />
 	</logger>
 
+	<logger name="org.glassfish.jersey" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+
 	<logger name="org.springframework.security.extensions" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="STDOUT" />

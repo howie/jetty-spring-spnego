@@ -30,8 +30,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:app-config.properties")
 @Import({JettyConfiguration.class, SecurityConfiguration.class})
 public class RootConfiguration {
-	
-	
+
 	@Bean
 	public Properties retrieveSystemProperties() {
 		return System.getProperties();

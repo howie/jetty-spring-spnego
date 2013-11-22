@@ -76,6 +76,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 	 */
 	@Override
 	protected void registerContextLoaderListener(ServletContext servletContext) {
+		servletContext.addFilter("HiddenHttpMethodFilter", org.springframework.web.filter.HiddenHttpMethodFilter.class);
 	}
 
 	private void configureEncodingFilter(ServletContext servletContext) {
@@ -89,6 +90,11 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 
 	}
 
+	/**
+	 * Register Spring Security
+	 * 
+	 * @param servletContext
+	 */
 	private void configureSpringSecurityFilter(ServletContext servletContext) {
 
 		DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy("springSecurityFilterChain");
@@ -98,23 +104,32 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 		securityFilterDynamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 	}
 
+	/**
+	 * Register JerseyServlet Config
+	 * 
+	 * @param servletContext
+	 */
+	private void configurationJersey(ServletContext servletContext) {
+
+		FilterRegistration.Dynamic filterDinamic = servletContext.addFilter("jersey",
+																			new org.glassfish.jersey.servlet.ServletContainer());
+		filterDinamic.setInitParameter("javax.ws.rs.Application", "tw.howie.sample.config.JerseyApplicationConfig");
+		filterDinamic.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/api/*");
+	}
+
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 
 		logger.info("On Startup WebAppInitializer.....");
-		
+
 		/* Let super do its thing... , include add RootConfig and ServletConfig */
 		super.onStartup(servletContext);
 
 		configureEncodingFilter(servletContext);
 
-		/* Add the Spring Security filter. */
 		configureSpringSecurityFilter(servletContext);
 
-		/*
-		 * We could add more servlets here such as the metrics servlet which is
-		 * added in @{link ca.unx.template.config.JettyConfiguration}.
-		 */
+		configurationJersey(servletContext);
 	}
 
 }

@@ -6,6 +6,7 @@ package tw.howie.sample.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -33,10 +34,8 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @EnableWebMvc
 @Configuration
 @EnableAsync
-// @EnableScheduling
-// @ComponentScan(useDefaultFilters = false, basePackages = {"tw.howie.sample"}, includeFilters =
-// {@ComponentScan.Filter(Controller.class)})
-@ImportResource("classpath:META-INF/spring/servlet-context.xml")
+@ComponentScan(basePackages = {"tw.howie.sample.controller"})
+@ImportResource({"classpath:META-INF/spring/servlet-context.xml"})
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -73,6 +72,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 	public SpringTemplateEngine thymeleafTemplateEngine() {
 		SpringTemplateEngine engine = new SpringTemplateEngine();
 		engine.setTemplateResolver(thymeleafTemplateResolver());
+
 		return engine;
 	}
 

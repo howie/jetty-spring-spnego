@@ -124,7 +124,6 @@ public class JettyConfiguration {
 		ctx.setInitParameter("checkInterval", "10");
 		ctx.setInitParameter("compilerTargetVM", "1.7");
 		ctx.setInitParameter("compilerSourceVM", "1.7");
-		// ctx.setInitParameter("compiler", "1.7");
 
 		/*
 		 * Create the root web application context and set
@@ -146,10 +145,10 @@ public class JettyConfiguration {
 
 		// Setup Threadpool
 		QueuedThreadPool threadPool = new QueuedThreadPool();
-		threadPool.setMaxThreads(maxThreads); // jetty.threadPool.MaxThreads
-		threadPool.setDaemon(isDaemon);// jetty.threadPool.daemon
-		threadPool.setMinThreads(minThreads);// jetty.threadPool.minThreads
-		threadPool.setName(threadPoolName);// jetty.threadPool.name
+		threadPool.setMaxThreads(maxThreads);
+		threadPool.setDaemon(isDaemon);
+		threadPool.setMinThreads(minThreads);
+		threadPool.setName(threadPoolName);
 
 		return threadPool;
 
