@@ -6,7 +6,6 @@ package tw.howie.sample.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -34,7 +33,6 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @EnableWebMvc
 @Configuration
 @EnableAsync
-@ComponentScan(basePackages = {"tw.howie.sample.controller"})
 @ImportResource({"classpath:META-INF/spring/servlet-context.xml"})
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
