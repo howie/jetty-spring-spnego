@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import tw.howie.sample.config.MvcConfiguration;
-import tw.howie.sample.controller.DummyController;
+import tw.howie.sample.jersey.restful.DummyController;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

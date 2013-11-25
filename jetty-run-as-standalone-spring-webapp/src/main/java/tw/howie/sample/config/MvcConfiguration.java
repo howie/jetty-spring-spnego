@@ -6,11 +6,13 @@ package tw.howie.sample.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 import org.thymeleaf.spring3.view.ThymeleafViewResolver;
@@ -33,10 +35,19 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @EnableWebMvc
 @Configuration
 @EnableAsync
+@ComponentScan(basePackages = "tw.howie.sample.mvc.controller")
 @ImportResource({"classpath:META-INF/spring/servlet-context.xml"})
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+
+		/* Mapping to the login view. */
+		registry.addViewController("/login").setViewName("login");
+
+	}
 
 	/**
 	 * Allow the default servlet to serve static files from the webapp root.
@@ -59,7 +70,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 	@Bean
 	public ServletContextTemplateResolver thymeleafTemplateResolver() {
 		ServletContextTemplateResolver resolver = new ServletContextTemplateResolver();
-		resolver.setPrefix("/WEB-INF/thymeleaf/");
+		resolver.setPrefix("/WEB-INF/views/");
 		resolver.setSuffix(".html");
 		resolver.setTemplateMode("HTML5");
 		resolver.setCacheable(true);
@@ -78,6 +89,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 	public ThymeleafViewResolver thymeleafViewResolver() {
 		ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 		resolver.setTemplateEngine(thymeleafTemplateEngine());
+		resolver.setOrder(1);
 		return resolver;
 	}
 

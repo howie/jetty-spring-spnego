@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tw.howie.sample.controller;
+package tw.howie.sample.jersey.restful;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
