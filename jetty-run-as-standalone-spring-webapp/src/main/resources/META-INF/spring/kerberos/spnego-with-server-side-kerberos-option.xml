@@ -14,6 +14,7 @@
 		<sec:intercept-url pattern="/css/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:intercept-url pattern="/images/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/webjars/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		
 		<sec:intercept-url pattern="/mvc/**" access="IS_AUTHENTICATED_FULLY" />
 		<sec:intercept-url pattern="/secure/**" access="IS_AUTHENTICATED_FULLY" />
@@ -21,7 +22,7 @@
 		<sec:intercept-url pattern="/monitor/**" access="IS_AUTHENTICATED_FULLY" />
 		<sec:intercept-url pattern="/j_spring_security_check*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER" />
-		<sec:form-login login-page="/login" default-target-url="/mvc/helloWorld" />
+		<sec:form-login login-page="/login" default-target-url="/" />
 	</sec:http>
 
 	<bean id="spnegoEntryPoint" class="org.springframework.security.extensions.kerberos.web.SpnegoEntryPoint" />

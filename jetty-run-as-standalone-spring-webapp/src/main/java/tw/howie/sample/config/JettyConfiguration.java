@@ -6,13 +6,17 @@ package tw.howie.sample.config;
 import java.io.IOException;
 
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
@@ -151,62 +155,62 @@ public class JettyConfiguration {
 	}
 
 	// only for jetty9
-	// @Bean
-	// public HttpConfiguration httpConfiguration() {
-	//
-	// // HTTP Configuration
-	// HttpConfiguration http_config = new HttpConfiguration();
-	// http_config.setSecureScheme("https");
-	// http_config.setSecurePort(8443);
-	// http_config.setOutputBufferSize(32768);
-	// http_config.setRequestHeaderSize(8192);
-	// http_config.setResponseHeaderSize(8192);
-	// http_config.setSendServerVersion(true);
-	// http_config.setSendDateHeader(false);
-	// // httpConfig.addCustomizer(new ForwardedRequestCustomizer());
-	//
-	// return http_config;
-	// }
+	@Bean
+	public HttpConfiguration httpConfiguration() {
+
+		// HTTP Configuration
+		HttpConfiguration http_config = new HttpConfiguration();
+		http_config.setSecureScheme("https");
+		http_config.setSecurePort(8443);
+		http_config.setOutputBufferSize(32768);
+		http_config.setRequestHeaderSize(8192);
+		http_config.setResponseHeaderSize(8192);
+		http_config.setSendServerVersion(true);
+		http_config.setSendDateHeader(false);
+		// httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+
+		return http_config;
+	}
 
 	// only for jetty9
-	// @Bean
-	// public HttpConfiguration httpsConfiguration() {
-	//
-	// // SSL HTTP Configuration
-	// HttpConfiguration https_config = new HttpConfiguration(httpConfiguration());
-	//
-	// /**
-	// * Referecne:
-	// * http://download.eclipse.org/jetty/stable-9/xref/org/eclipse/jetty/server/SecureRequestCustomizer.html
-	// *
-	// */
-	// https_config.addCustomizer(new SecureRequestCustomizer());
-	//
-	// return https_config;
-	// }
+	@Bean
+	public HttpConfiguration httpsConfiguration() {
+
+		// SSL HTTP Configuration
+		HttpConfiguration https_config = new HttpConfiguration(httpConfiguration());
+
+		/**
+		 * Referecne:
+		 * http://download.eclipse.org/jetty/stable-9/xref/org/eclipse/jetty/server/SecureRequestCustomizer.html
+		 * 
+		 */
+		https_config.addCustomizer(new SecureRequestCustomizer());
+
+		return https_config;
+	}
 
 	// only for jetty9
-	// @Bean
-	// public SslContextFactory sslContextFactory() {
-	//
-	// SslContextFactory sslContextFactory = new SslContextFactory();
-	// sslContextFactory.setKeyStorePath(keyStorePath);
-	//
-	// // FIXME
-	// sslContextFactory.setKeyStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
-	// sslContextFactory.setKeyManagerPassword("OBF:1u2u1wml1z7s1z7a1wnl1u2g");
-	// sslContextFactory.setTrustStorePath(keyStorePath);
-	// sslContextFactory.setTrustStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
-	// sslContextFactory.setExcludeCipherSuites( "SSL_RSA_WITH_DES_CBC_SHA",
-	// "SSL_DHE_RSA_WITH_DES_CBC_SHA",
-	// "SSL_DHE_DSS_WITH_DES_CBC_SHA",
-	// "SSL_RSA_EXPORT_WITH_RC4_40_MD5",
-	// "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
-	// "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
-	// "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
-	//
-	// return sslContextFactory;
-	// }
+	@Bean
+	public SslContextFactory sslContextFactory() {
+
+		SslContextFactory sslContextFactory = new SslContextFactory();
+		sslContextFactory.setKeyStorePath(keyStorePath);
+
+		// FIXME
+		sslContextFactory.setKeyStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
+		sslContextFactory.setKeyManagerPassword("OBF:1u2u1wml1z7s1z7a1wnl1u2g");
+		sslContextFactory.setTrustStorePath(keyStorePath);
+		sslContextFactory.setTrustStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
+		sslContextFactory.setExcludeCipherSuites(	"SSL_RSA_WITH_DES_CBC_SHA",
+													"SSL_DHE_RSA_WITH_DES_CBC_SHA",
+													"SSL_DHE_DSS_WITH_DES_CBC_SHA",
+													"SSL_RSA_EXPORT_WITH_RC4_40_MD5",
+													"SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
+													"SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
+													"SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
+
+		return sslContextFactory;
+	}
 
 	@Bean
 	public RequestLogHandler requestLogHandler() {
@@ -248,13 +252,13 @@ public class JettyConfiguration {
 	public Server jettyServer() throws IOException {
 
 		/* Create the server. */
-		// Server server = new Server(queuedThreadPool());
-		Server server = new Server(jettyPort);
-		
+		Server server = new Server(queuedThreadPool());
+		// Server server = new Server(jettyPort);
+
 		/* Create a basic connector. */
-		// ServerConnector httpConnector = new ServerConnector(server);
-		// httpConnector.setPort(jettyPort);
-		// server.addConnector(httpConnector);
+		ServerConnector httpConnector = new ServerConnector(server);
+		httpConnector.setPort(jettyPort);
+		server.addConnector(httpConnector);
 
 		/* Create a SSL connector */
 		// ServerConnector sslConnector = new ServerConnector( server,

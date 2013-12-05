@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring3.SpringTemplateEngine;
@@ -40,6 +41,14 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
+
+	/**
+	 * @See http://www.webjars.org/documentation
+	 */
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	}
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
